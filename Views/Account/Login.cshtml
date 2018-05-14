@@ -1,0 +1,53 @@
+﻿@using leavedays.Models.ViewModels.Account
+@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Log in";
+}
+<script type="text/javascript" src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.validate.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div>
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new
+    {
+        @id = "postForm",
+        role = "form",
+    }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="bordered">
+            <table>
+                <tr>
+                    <td>@Html.LabelFor(m => m.UserName)</td>
+                    <td>@Html.TextBoxFor(m => m.UserName)</td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.ValidationMessageFor(m => m.UserName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.Password)</td>
+                    <td>@Html.PasswordFor(m => m.Password)</td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(m => m.RememberMe)</td>
+                    <td>@Html.CheckBoxFor(m => m.RememberMe)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="SignIn" />
+                    </td>
+                </tr>
+            </table>
+            <div>
+                @Html.ValidationSummary(true, "")
+            </div>
+        </div>
+    }
+</div>

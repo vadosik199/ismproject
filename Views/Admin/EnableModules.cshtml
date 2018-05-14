@@ -1,0 +1,93 @@
+﻿@using leavedays.Models.ViewModels.License;
+@using leavedays.Models;
+@model LicenseInformation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<div class="bordered">
+    <h2>Add Modules</h2>
+    <br />
+
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>@Model.LicenseName</td>
+
+        </tr>
+        <tr>
+            <td>License Code</td>
+            <td>@Model.LicenseCode</td>
+        </tr>
+        <tr>
+            <td>Available for purchase modules</td>
+            <td>
+                @using (Ajax.BeginForm("EnableModules", new AjaxOptions
+                {
+                    UpdateTargetId = "tableBlock"
+                }))
+                {
+                    <div id="tableBlock">
+                        @Html.Partial("SwitchModules", Model.ModulesInfoList)
+                        
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+    <div id="info" style="display: none; margin: 25px 0 0  20%;">
+        <span>
+            Extra costs: $<span id="price">0</span> per user per month.
+        </span>
+        <br />
+        <span>
+            You have <span id="total">@Model.LicensesCount</span> licenses of which <span id="active">@Model.ActiveLicensesCount</span> active.
+        </span>
+        <br />
+        <span>
+            This will result in $<span id="tatalCosts"></span> extra per month.
+        </span>
+        <br />
+        <span>
+            Please confirm by clicking "Save" below.
+        </span>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        var active = parseInt($('#active').html(), 10);
+        var totalCostsFiled = $('#tatalCosts');
+
+        var price = $('#price');
+        var table = $('#moduleTable');
+        var submit = $('#submit');
+        var infoBlock = $('#info');
+        var checked;
+
+        $(table).on('click', 'input[type="checkbox"]', function () {
+            var extraCostsNum = 0.0;
+            checked = $(table).find('td').find('input[type="checkbox"]:checked');
+            $(checked).each(function (index, data) {
+                var tr = $(this).parent().parent();
+                extraCostsNum = parseFloat($(tr).attr('price')) + extraCostsNum;
+            });
+
+            if (extraCostsNum > 0.0) {
+                $(price).html(extraCostsNum);
+                $(totalCostsFiled).html(extraCostsNum * active);
+                $(infoBlock).show();
+            }
+            else {
+                $(infoBlock).fadeOut(200);
+            }
+        });
+
+        $(submit).on('click', function () {
+            $(infoBlock).hide();
+        });
+    });
+</script>

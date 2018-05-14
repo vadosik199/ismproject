@@ -1,0 +1,181 @@
+﻿@using leavedays.Models.ViewModels.License
+
+@model IEnumerable<InvoiceView>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Invoices";
+}
+
+<table id="invoiceTable">
+    @*@using (Html.BeginForm("DownloadInvoices", "Admin"))
+    {*@
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Sender</th>
+                    <th>Subject</th>
+                    <th>Receiver</th>
+                    <th>Att</th>
+                    <th></th>
+                </tr>
+            </thead>
+           <tfoot>
+   @* @if (Model.Count() > 0)
+    {
+        <tr>
+            <td>
+                <input type="checkbox" name="name" value="uuu" id="sellectAll" />
+            </td>
+            <td>Select all messages</td>
+            <td><input type="submit" id="downloadAll" value="Download" style="visibility:hidden" /></td>
+            <td><input type="submit" id="deleteAll" value="Delete" style="visibility:hidden" /></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+    }*@
+            </tfoot>
+            <tbody>
+                @foreach (var invoice in Model)
+                {
+                    <tr>
+                        <td>
+    @*<input type="checkbox" name="ids" value="@invoice.Id" />*@
+                        </td>
+                        @using (Html.BeginForm("DownloadInvoice", "Admin"))
+                        {
+                            <td><input type="hidden" name="id" value="@invoice.Id" />@invoice.CompanyName</td>
+                            <td>Invoice @invoice.Id</td>
+                            <td>@invoice.RecieveDate</td>
+                            <td>Att</td>
+                            <td>
+                                <ul class="drop-menu-main">
+                                    <li>
+                                        <span class="drop-down">Option<span class="arrow">&#9660;</span></span>
+                                        <div class="drop-menu-main-sub">
+                                            <span class="title"></span>
+                                            <input type="submit" value="Download" />
+                                            <input type="submit" value="Delete" />
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                        }
+                        
+                    </tr>
+                }
+            </tbody>
+</table>
+
+<script>
+    (function () {
+        var ids = [];
+        window.addEventListener("load", function () {
+            var mass = document.querySelectorAll("#invoiceTable tbody input[type='checkbox']");
+            for (var i = 0; i < mass.length; i++) {
+                mass[i].addEventListener("click", function (event) {
+                    if (event.target.checked) {
+                        event.target.setAttribute("checked", "checked");
+                        ids.push(event.target.value);
+                    }
+                    else {
+                        ids.splice(ids.indexOf(event.target.value, 1));
+                    }
+                    if (document.querySelectorAll("input:checked").length > 0) {
+                        document.getElementById("downloadAll").style.visibility = "visible";
+                        document.getElementById("deleteAll").style.visibility = "visible";
+                    }
+                    else {
+                        document.getElementById("downloadAll").style.visibility = "hidden";
+                        document.getElementById("deleteAll").style.visibility = "hidden";
+                    }
+                    alert(ids);
+                });
+            }
+        });
+        if (document.getElementById("sellectAll") != undefined) {
+            document.getElementById("sellectAll").addEventListener("click", function (e) {
+                if (e.target.hasAttribute("checked")) {
+                    var checkboxs = document.getElementById("invoiceTable").querySelectorAll("input[type='checkbox']");
+                    for (var i = 0; i < checkboxs.length; i++) {
+                        checkboxs[i].checked = false;
+                    }
+                    ids = [];
+                    e.target.removeAttribute("checked");
+                    document.getElementById("downloadAll").style.visibility = "hidden";
+                    document.getElementById("deleteAll").style.visibility = "hidden";
+                }
+                else {
+                    var checkboxs = document.getElementById("invoiceTable").querySelectorAll("input[type='checkbox']");
+                    for (var i = 0; i < checkboxs.length; i++) {
+                        checkboxs[i].checked = true;
+                    }
+                    var mass = document.querySelectorAll("#invoiceTable tbody input[type='checkbox']");
+                    var ids = document.getElementById("ids");
+                    ids = [];
+                    for (var i = 0; i < mass.length; i++) {
+                        ids.push(mass[i].value);
+                    }
+                    e.target.setAttribute("checked", "checked");
+                    document.getElementById("downloadAll").style.visibility = "visible";
+                    document.getElementById("deleteAll").style.visibility = "visible";
+                }
+                alert(ids);
+            });
+        }
+        if (document.getElementById("downloadAll") != undefined) {
+            document.getElementById("downloadAll").addEventListener("click", function (event) {
+                event.target.form.setAttribute("action", "/Admin/DownloadInvoices");
+            });
+        }
+        if (document.getElementById("deleteAll") != undefined) {
+            document.getElementById("deleteAll").addEventListener("click", function (event) {
+                event.target.form.setAttribute("action", "/Admin/DeleteInvoices");
+            });
+        }
+        document.querySelector("#invoiceTable tbody").addEventListener("click", function (event) {
+            if (event.target.tagName == "INPUT") {
+                if (event.target.value == "Download") {
+                    event.target.form.setAttribute("action", "/Admin/DownloadInvoice");
+                }
+                else {
+                    event.target.form.setAttribute("action", "/Admin/DeleteInvoice");
+                }
+            }
+        });
+
+    })();
+</script>
+<script>
+    $(document).ready(function () {
+
+        function hideallDropdowns() {
+            $(".dropped .drop-menu-main-sub").hide();
+            $(".dropped").removeClass('dropped');
+            $(".dropped .drop-menu-main-sub .title").unbind("click");
+        }
+
+        function showDropdown(el) {
+            var el_li = $(el).parent().addClass('dropped');
+            el_li
+                .find('.title')
+                .click(function () {
+                    hideallDropdowns();
+                })
+                .html($(el).html());
+
+            el_li.find('.drop-menu-main-sub').show();
+        }
+
+        $(".drop-down").click(function () {
+            showDropdown(this);
+        });
+
+        $(document).mouseup(function () {
+            hideallDropdowns();
+        });
+    });
+</script>
+
+
